@@ -16,17 +16,17 @@ jobs:
     
     - name: Build (x64)
       run: |
-        mkdir package\plugins\x64
+        mkdir package\x64\plugins
         cmake -B build64 -A x64
         cmake --build build64 --config Release
-        copy build64\Release\*.dp64 package\plugins\x64\
+        copy build64\Release\*.dp64 package\x64\plugins\
 
     - name: Build (x32)
       run: |
-        mkdir package\plugins\x32
+        mkdir package\x32\plugins
         cmake -B build32 -A Win32
         cmake --build build32 --config Release
-        copy build32\Release\*.dp32 package\plugins\x32\
+        copy build32\Release\*.dp32 package\x32\plugins\
     
     - uses: actions/upload-artifact@v2
       with:
