@@ -41,9 +41,10 @@ static bool cbMiniDump(int argc, char* argv[])
 		return false;
 	}
 
-	CONTEXT context;
+	CONTEXT context = {};
 	context.ContextFlags = CONTEXT_ALL;
 	GetThreadContext(DbgGetThreadHandle(), &context);
+	context.EFlags &= ~0x100; // remove trap flag
 
 	EXCEPTION_POINTERS exceptionPointers = {};
 	exceptionPointers.ContextRecord = &context;
