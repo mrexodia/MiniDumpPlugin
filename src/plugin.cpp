@@ -41,6 +41,25 @@ static bool cbMiniDump(int argc, char* argv[])
 		return false;
 	}
 
+	// Disable all software breakpoints
+	std::vector<duint> disabled_breakpoints;
+	{
+		BPMAP bplist;
+		DbgGetBpList(bp_normal, &bplist);
+		for (int i = 0; i < bplist.count; i++)
+		{
+			const auto& bp = bplist.bp[i];
+			if (bp.active && bp.enabled)
+			{
+				char cmd[256] = "";
+				sprintf_s(cmd, "bd 0x%p", bp.addr);
+				if (DbgCmdExecDirect(cmd))
+					disabled_breakpoints.push_back(bp.addr);
+			}
+		}
+		BridgeFree(bplist.bp);
+	}
+
 	CONTEXT context = {};
 	context.ContextFlags = CONTEXT_ALL;
 	GetThreadContext(DbgGetThreadHandle(), &context);
@@ -65,7 +84,17 @@ static bool cbMiniDump(int argc, char* argv[])
 	exceptionInfo.ExceptionPointers = &exceptionPointers;
 	exceptionInfo.ClientPointers = FALSE;
 	auto dumpType = MINIDUMP_TYPE(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpIgnoreInaccessibleMemory);
-	if (MiniDumpWriteDump(DbgGetProcessHandle(), DbgGetProcessId(), hFile, dumpType, &exceptionInfo, nullptr, nullptr))
+	auto dumpSaved = !!MiniDumpWriteDump(DbgGetProcessHandle(), DbgGetProcessId(), hFile, dumpType, &exceptionInfo, nullptr, nullptr);
+
+	// Re-enable all breakpoints that were previously disabled
+	for (auto addr : disabled_breakpoints)
+	{
+		char cmd[256] = "";
+		sprintf_s(cmd, "be 0x%p", addr);
+		DbgCmdExecDirect(cmd);
+	}
+
+	if (dumpSaved)
 	{
 		dputs("Dump saved!");
 	}
