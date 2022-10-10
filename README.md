@@ -1,5 +1,7 @@
 # MiniDumpPlugin
 
+**Note**: This plugin has been integrated into x64dbg as the [minidump](https://help.x64dbg.com/en/latest/commands/memory-operations/minidump.html) command since 2022-10-10.
+
 Simple [x64dbg](https://x64dbg.com) plugin to save the current state in a full minidump. Created for [dumpulator](https://github.com/mrexodia/dumpulator).
 
 **Download the latest binaries [here](https://github.com/mrexodia/MiniDumpPlugin/releases).**
