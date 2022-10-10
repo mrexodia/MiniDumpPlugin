@@ -44,7 +44,7 @@ static bool cbMiniDump(int argc, char* argv[])
 	// Disable all software breakpoints
 	std::vector<duint> disabled_breakpoints;
 	{
-		BPMAP bplist;
+		BPMAP bplist = {};
 		DbgGetBpList(bp_normal, &bplist);
 		for (int i = 0; i < bplist.count; i++)
 		{
@@ -52,7 +52,7 @@ static bool cbMiniDump(int argc, char* argv[])
 			if (bp.active && bp.enabled)
 			{
 				char cmd[256] = "";
-				sprintf_s(cmd, "bd 0x%p", bp.addr);
+				sprintf_s(cmd, "bd 0x%p", (void*)bp.addr);
 				if (DbgCmdExecDirect(cmd))
 					disabled_breakpoints.push_back(bp.addr);
 			}
@@ -90,7 +90,7 @@ static bool cbMiniDump(int argc, char* argv[])
 	for (auto addr : disabled_breakpoints)
 	{
 		char cmd[256] = "";
-		sprintf_s(cmd, "be 0x%p", addr);
+		sprintf_s(cmd, "be 0x%p", (void*)addr);
 		DbgCmdExecDirect(cmd);
 	}
 
