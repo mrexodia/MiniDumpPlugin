@@ -83,7 +83,7 @@ static bool cbMiniDump(int argc, char* argv[])
 	exceptionInfo.ThreadId = DbgGetThreadId();
 	exceptionInfo.ExceptionPointers = &exceptionPointers;
 	exceptionInfo.ClientPointers = FALSE;
-	auto dumpType = MINIDUMP_TYPE(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpIgnoreInaccessibleMemory);
+	auto dumpType = MINIDUMP_TYPE(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpIgnoreInaccessibleMemory | MiniDumpWithHandleData);
 	auto dumpSaved = !!MiniDumpWriteDump(DbgGetProcessHandle(), DbgGetProcessId(), hFile, dumpType, &exceptionInfo, nullptr, nullptr);
 
 	// Re-enable all breakpoints that were previously disabled
